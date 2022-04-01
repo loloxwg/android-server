@@ -1,0 +1,1 @@
+{"level":"info","ts":"2021-12-30T19:49:18.398+0800","caller":"handler/http_handler.go:26","msg":"HTTP server is running on 0.0.0.0:8082"}

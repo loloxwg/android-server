@@ -1,0 +1,44 @@
+{
+    "listen_ip": "0.0.0.0",
+    "http_port": 8082,
+    "register_name": "android_server",
+
+    "log_config":{
+        "dir": "log/",
+        "prefix": "android_log",
+        "suffix": ".log",
+        "level": "DEBUG",
+        "maxAge": 100
+    },
+    "crash_log_config":{
+        "log_dir": "log/",
+        "log_prefix": "crash",
+        "log_suffix": ".log"
+    },
+    "mysql":{
+        "username":"root",
+        "password":"123456",
+        "network":"tcp",
+        "server":"47.110.161.238",
+        "port":3306,
+        "database":"android_server",
+        "max_open_conns":100,
+        "max_idle_conns":20
+    },
+    "etcd_config":{
+        "etcd_server":["https://192.168.30.10:2379", "https://192.168.30.11:2379", "https://192.168.30.12:2379"],
+        "cert_file":"/usr/local/etc/senseptrel-backend/etcd-cert.pem",
+        "key_file":"/usr/local/etc/senseptrel-backend/etcd-key.pem",
+        "ca_file":"/usr/local/etc/senseptrel-backend/etcd-cacert.pem",
+        
+        "policy_template":"/usr/local/etc/senseptrel-backend/policy_template.json",
+        "lifecycle_template":"/usr/local/etc/senseptrel-backend/lifecycle_template.json",
+        "add_user_template":"/usr/local/etc/senseptrel-backend/template.xlsx",
+        "_policy_template":"./etc/policy_template.json",
+        "_lifecycle_template":"./etc/lifecycle_template.json",
+        "_add_user_template":"./etc/template.xlsx",
+        "etcd_names":{
+            "name":"/sensepetrel"
+        }
+    }
+}

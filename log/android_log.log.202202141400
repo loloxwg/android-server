@@ -1,0 +1,2 @@
+{"level":"error","ts":"2022-02-14T14:46:56.100+0800","caller":"mysql/mysql.go:58","msg":"open mysql error:Error 1045: Access denied for user 'root'@'58.34.163.122' (using password: YES)"}
+{"level":"info","ts":"2022-02-14T14:48:24.114+0800","caller":"handler/http_handler.go:40","msg":"HTTP server is running on 0.0.0.0:8082"}

@@ -1,0 +1,1 @@
+{"level":"error","ts":"2021-12-30T16:53:09.411+0800","caller":"mysql/mysql.go:58","msg":"open mysql error:Error 1049: Unknown database 'android_server'"}

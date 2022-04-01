@@ -1,0 +1,14 @@
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] GET    /HeartBeat                --> androidServer/api.(*HeartBeatRequest).Process-fm (1 handlers)
+[GIN-debug] POST   /api/storage/users/addUser --> androidServer/handler.HttpRun.func1 (1 handlers)
+The tcp server is running faild: <nil>
+panic: nil
+
+goroutine 10 [running]:
+main.runHttpServer({0xc00002dda8, 0x0}, 0x1f92)
+	/Users/zhangxuanwei/GolandProjects/androidServer/cmd/main.go:42 +0x126
+created by main.main
+	/Users/zhangxuanwei/GolandProjects/androidServer/cmd/main.go:127 +0x205
