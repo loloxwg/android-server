@@ -5,11 +5,12 @@ import (
 	"androidServer/app/mysql"
 	"androidServer/common/types"
 	"androidServer/handler/base"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	uncommon "github.com/gofrs/uuid"
 	"gorm.io/gorm"
-	"net/http"
-	"time"
 )
 
 type AddSignalRequest struct {
@@ -17,21 +18,27 @@ type AddSignalRequest struct {
 }
 
 type AddSignalParams struct {
-	UUID       string `json:"uuid"`
-	SignalName string `json:"signal_name" ` //名字
-	LocationX  string `json:"location_x" `  //性别
-	LocationY  string `json:"location_y" `  //民族
-	Rssi       string `json:"rssi"`         //
+	// UUID       string `json:"uuid"`
+	// SignalName string `json:"signal_name" ` //名字
+	// LocationX  string `json:"location_x" `  //性别
+	// LocationY  string `json:"location_y" `  //民族
+	// Rssi       string `json:"rssi"`         //
+
+	RecordData string `json:"recordData"` //ibeacon记录
 }
 
-type AddSignalResponse struct {
-	UUID       string `json:"uuid"`
-	SignalName string `json:"signal_name" ` //名字
-	LocationX  string `json:"locon_x" `     //性别
-	LocationY  string `json:"locon_y" `     //民族
-	Rssi       string `json:"rssi"`         //
-	Message    string `json:"message"`
+type AddSignalResponse struct { //返回结构体
+	// UUID       string `json:"uuid"`
+	// SignalName string `json:"signal_name" ` //名字
+	// LocationX  string `json:"locon_x" `     //性别
+	// LocationY  string `json:"locon_y" `     //民族
+	// Rssi       string `json:"rssi"`         //
+	// Message    string `json:"message"`
+
+	RecordData string `json:"RecordData"`
 }
+
+// c.Writer.Header().Set("location","")
 
 func (req *AddSignalRequest) Process(c *gin.Context) {
 	var raw = new(base.ApiBaseRequest)
@@ -45,7 +52,8 @@ func (req *AddSignalRequest) Process(c *gin.Context) {
 	// Begin Action
 	beginTime := time.Now()
 	var resp base.ApiBaseResponse
-	log.Info("Begin Action",
+	log.Info(
+		"Begin Action",
 		" Method:", c.Request.Method,
 		" Proto:", c.Request.Proto,
 		" RemoteAddr:", c.Request.RemoteAddr,
@@ -70,22 +78,23 @@ func (req *AddSignalRequest) Process(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResp)
 		return
 	}
+	//	注释了DB操作代码
+	// errResp = req.DBAddUser(params)
+	// if errResp != nil {
+	// 	c.JSON(http.StatusBadRequest, errResp)
+	// 	return
+	// }
 
-	errResp = req.DBAddUser(params)
-	if errResp != nil {
-		c.JSON(http.StatusBadRequest, errResp)
-		return
-	}
-	addSignalResp := &AddSignalResponse{
-		UUID:       req.RequestUUID,
-		SignalName: params.SignalName,
-		LocationY:  params.LocationY,
-		LocationX:  params.LocationX,
-		Rssi:       params.Rssi,
-		Message:    "success",
+	addSignalResp := &AddSignalResponse{ //返回报文结构
+		// UUID:       req.RequestUUID,
+		// SignalName: params.SignalName,
+		// LocationY:  params.LocationY,
+		// LocationX:  params.LocationX,
+		// Rssi:       params.Rssi,
+		RecordData: params.RecordData,
 	}
 	c.Writer.Header().Set("request_uuid", raw.RequestUUID)
-
+	c.Writer.Header().Set("location", "location")
 	log.Debug("session:", req.RequestUUID, ", add user success, resp:", addSignalResp)
 	c.JSON(http.StatusOK, addSignalResp)
 
@@ -93,21 +102,24 @@ func (req *AddSignalRequest) Process(c *gin.Context) {
 
 func (req *AddSignalRequest) ParseParameters(c *gin.Context) (params *AddSignalParams, resp base.ApiBaseResponse) {
 	params = &AddSignalParams{}
-	params.SignalName = c.PostForm("signal_name")
-	params.LocationX = c.PostForm("location_x")
-	params.LocationY = c.PostForm("location_y")
-	params.Rssi = c.PostForm("rssi")
+	// params.SignalName = c.PostForm("signal_name")
+	// params.LocationX = c.PostForm("location_x")
+	// params.LocationY = c.PostForm("location_y")
+	// params.Rssi = c.PostForm("rssi")
+	params.RecordData = c.PostForm("recordData")
+	log.Debug("session: ", req.RequestUUID, "record_data:", params.RecordData)
 
 	return params, nil
 }
 func (req *AddSignalRequest) DBAddUser(params *AddSignalParams) (errResp base.ApiBaseResponse) {
 	db := mysql.GetDB()
 	signalInfo := types.SignalInfo{
-		UUID:       req.RequestUUID,
-		SignalName: params.SignalName,
-		LocationY:  params.LocationY,
-		LocationX:  params.LocationX,
-		Rssi:       params.Rssi,
+		// UUID:       req.RequestUUID,
+		// SignalName: params.SignalName,
+		// LocationY:  params.LocationY,
+		// LocationX:  params.LocationX,
+		// Rssi:       params.Rssi,
+		RecordData: params.RecordData,
 	}
 
 	err := db.Transaction(func(db *gorm.DB) error {
