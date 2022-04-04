@@ -118,11 +118,11 @@ func main() {
 	}
 
 	//初始化mysql
-	//err = initMysql()
-	//if err != nil {
-	//	fmt.Printf("Init mysql module failed: %v\n", err)
-	//	panic(err)
-	//}
+	err = initMysql()
+	if err != nil {
+		fmt.Printf("Init mysql module failed: %v\n", err)
+		panic(err)
+	}
 
 	err = initUserMap()
 	if err != nil {

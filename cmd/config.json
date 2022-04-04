@@ -19,8 +19,8 @@
         "username":"root",
         "password":"123456",
         "network":"tcp",
-        "server":"47.110.161.238",
-        "port":3306,
+        "server":"124.222.47.219",
+        "port":33066,
         "database":"android_server",
         "max_open_conns":100,
         "max_idle_conns":20

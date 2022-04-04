@@ -46,6 +46,21 @@ func HttpRun(addr string) error {
 			api.UploadFileHandler().Process(c)
 		})
 	}
+
+	//          http  post request    127.0.0.1:8082   /api/storge/      +/signal
+
+	signal := r.Group(app.Conf.PathPrefix + "/signal")
+	{
+		//  插入signal
+		signal.POST("", func(c *gin.Context) {
+			api.AddSignalHandler().Process(c)
+		})
+		// check signal
+		//signal.GET("", func(c *gin.Context) {
+		//	api.GetSignalHandler().Process(c)
+		//})
+
+	}
 	log.Infof("HTTP server is running on %s", addr)
 	_ = r.Run(addr)
 	log.Errorf("HTTP server will be down %s", addr)

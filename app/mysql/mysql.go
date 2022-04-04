@@ -87,6 +87,13 @@ func checkTables(DB *gorm.DB) error {
 			return err
 		}
 	}
-
+	exist = DB.Migrator().HasTable(&types.SignalInfo{})
+	if !exist {
+		err := DB.Migrator().CreateTable(&types.SignalInfo{})
+		if err != nil {
+			fmt.Println("create UserInfo error:", err.Error())
+			return err
+		}
+	}
 	return nil
 }
