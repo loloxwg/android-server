@@ -61,6 +61,18 @@ func HttpRun(addr string) error {
 		//})
 
 	}
+	influx := r.Group(app.Conf.PathPrefix + "/influx")
+	{
+		//  插入influx
+		influx.POST("/insert", func(c *gin.Context) {
+			api.AddInfluxHandler().Process(c)
+		})
+		// check influx
+		//influx.GET("", func(c *gin.Context) {
+		//	api.GetInfluxHandler().Process(c)
+		//})
+
+	}
 	log.Infof("HTTP server is running on %s", addr)
 	_ = r.Run(addr)
 	log.Errorf("HTTP server will be down %s", addr)

@@ -11,6 +11,8 @@ type SignalInfo struct {
 	// Rssi       string `json:"rssi" gorm:"type:varchar(32);not null"`
 	//
 	RecordData string `json:"record_data" gorm:"type:varchar(255);not null"`
+
+	UserInfo UserInfo `gorm:"foreignkey:user_id;references:uuid"`
 }
 
 // TableName UserInfo绑定表名
