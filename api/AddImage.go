@@ -94,17 +94,28 @@ func (req *AddImageRequest) Process(c *gin.Context) {
 }
 
 func (req *AddImageRequest) ParseParameters(c *gin.Context) (params *AddImageParams, resp base.ApiBaseResponse) {
-	bs, err := ioutil.ReadAll(c.Request.Body)
+	multipartFileHeader, err := c.FormFile("file_content")
 	if err != nil {
-		log.Error("session:", req.RequestUUID, ", Read request body failed error:", err)
-		resp = req.ErrorResponse("INTERNAL_ERROR", "read body error")
-		return
+		log.Error("session:", req.RequestUUID, " FormFile error, ", err)
+		return req.ErrorResponse("INTERNAL_ERROR", err)
 	}
-	params = &AddImageParams{}
-	if err := json.Unmarshal(bs, params); err != nil {
-		log.Error("session:", req.RequestUUID, ", Unmarshal json failed error:", err, ", request:", string(bs))
-		resp = req.ErrorResponse("INTERNAL_ERROR", "body format error")
-		return
+
+	openFile, err := multipartFileHeader.Open()
+	if err != nil {
+		log.Error("session:", req.RequestUUID, " open multipart file error, ", err)
+		return req.ErrorResponse("INTERNAL_ERROR", err)
+	}
+
+	params.FileContent, err = io.ReadAll(openFile)
+	if err != nil {
+		log.Error("session:", req.RequestUUID, " read file content error, ", err)
+		return req.ErrorResponse("INTERNAL_ERROR", err)
+	}
+
+	path := c.PostForm("file_name")
+	if path == "" {
+		log.Error("session:", req.RequestUUID, " params empty, path")
+		return req.ErrorResponse("PARAMS_ERROR", "path")
 	}
 
 	return params, nil
