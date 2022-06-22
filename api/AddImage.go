@@ -9,13 +9,11 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	uncommon "github.com/gofrs/uuid"
-	"github.com/tencentyun/cos-go-sdk-v5"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
 	"gorm.io/gorm"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 )
@@ -121,7 +119,7 @@ func (req *AddImageRequest) OSSAddImage(params *AddImageParams) (errResp base.Ap
 			// 环境变量 COS_SECRETID 表示用户的 SecretId，登录访问管理控制台查看密钥，https://console.cloud.tencent.com/cam/capi
 			SecretID: "AKIDnQntiGYZJmzvay6xWopa4GBqELBk23oH",
 			// 环境变量 COS_SECRETKEY 表示用户的 SecretKey，登录访问管理控制台查看密钥，https://console.cloud.tencent.com/cam/capi
-			SecretKey: os.Getenv("COS_SECRETKEY"),
+			SecretKey: "FDtJTLwGJ5anjPdeOr3yc18yXprc5HCr",
 			// Debug 模式，把对应 请求头部、请求内容、响应头部、响应内容 输出到标准输出
 			Transport: &debug.DebugRequestTransport{
 				RequestHeader: true,
