@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	uncommon "github.com/gofrs/uuid"
 	"github.com/tencentyun/cos-go-sdk-v5/debug"
+	"github.com/tencentyun/cos-go-sdk-v5"
 	"gorm.io/gorm"
 	"io/ioutil"
 	"net/http"
