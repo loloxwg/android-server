@@ -24,6 +24,7 @@ type ImageInfo struct {
 	ImageName string `json:"image_name"`
 	Url       string `json:"url"`
 	Collect   int    `json:"collect"`
+	UUID      string `json:"uuid"`
 }
 
 func (req *ListImageRequest) Process(c *gin.Context) {

@@ -51,6 +51,9 @@ func HttpRun(addr string) error {
 		files.GET("/images", func(c *gin.Context) {
 			api.ListImageHandler().Process(c)
 		})
+		files.POST("/id:id/collect", func(c *gin.Context) {
+			api.AddImageCollectHandler().Process(c)
+		})
 	}
 
 	//          http  post request    127.0.0.1:8082   /api/storge/      +/signal
