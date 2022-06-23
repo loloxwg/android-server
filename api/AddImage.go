@@ -6,13 +6,12 @@ import (
 	"androidServer/common/types"
 	"androidServer/handler/base"
 	"context"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	uncommon "github.com/gofrs/uuid"
-	"github.com/tencentyun/cos-go-sdk-v5/debug"
 	"github.com/tencentyun/cos-go-sdk-v5"
+	"github.com/tencentyun/cos-go-sdk-v5/debug"
 	"gorm.io/gorm"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -21,7 +20,9 @@ import (
 
 type AddImageRequest struct {
 	base.ApiBaseRequest
-	Url string
+	Url         string
+	FileContent []byte
+	FileName    string
 }
 
 type AddImageParams struct {
@@ -86,7 +87,9 @@ func (req *AddImageRequest) Process(c *gin.Context) {
 
 	c.Writer.Header().Set("request_uuid", raw.RequestUUID)
 	addImageResp := &AddImageResponse{
-		UUID: req.RequestUUID,
+		UUID:     req.RequestUUID,
+		Url:      req.Url,
+		FileName: req.FileName,
 	}
 	log.Debug("session:", req.RequestUUID, ", add Image success, resp:", addImageResp)
 	c.JSON(http.StatusOK, addImageResp)
@@ -96,27 +99,28 @@ func (req *AddImageRequest) Process(c *gin.Context) {
 func (req *AddImageRequest) ParseParameters(c *gin.Context) (params *AddImageParams, resp base.ApiBaseResponse) {
 	multipartFileHeader, err := c.FormFile("file_content")
 	if err != nil {
-		log.Error("session:", req.RequestUUID, " FormFile error, ", err)
-		return req.ErrorResponse("INTERNAL_ERROR", err)
+		log.Error("session:", req.RequestUUID, " FormFile error, ", err.Error())
+		return nil, req.ErrorResponse("INTERNAL_ERROR", err)
 	}
 
 	openFile, err := multipartFileHeader.Open()
 	if err != nil {
 		log.Error("session:", req.RequestUUID, " open multipart file error, ", err)
-		return req.ErrorResponse("INTERNAL_ERROR", err)
+		return nil, req.ErrorResponse("INTERNAL_ERROR", err)
 	}
 
-	params.FileContent, err = io.ReadAll(openFile)
+	req.FileContent, err = io.ReadAll(openFile)
 	if err != nil {
 		log.Error("session:", req.RequestUUID, " read file content error, ", err)
-		return req.ErrorResponse("INTERNAL_ERROR", err)
+		return nil, req.ErrorResponse("INTERNAL_ERROR", err)
 	}
 
-	path := c.PostForm("file_name")
-	if path == "" {
-		log.Error("session:", req.RequestUUID, " params empty, path")
-		return req.ErrorResponse("PARAMS_ERROR", "path")
+	name := c.PostForm("file_name")
+	if name == "" {
+		log.Error("session:", req.RequestUUID, " params empty, file_name")
+		return nil, req.ErrorResponse("PARAMS_ERROR", "file_name")
 	}
+	req.FileName = name
 
 	return params, nil
 }
@@ -144,15 +148,15 @@ func (req *AddImageRequest) OSSAddImage(params *AddImageParams) (errResp base.Ap
 	})
 
 	// Case1 上传对象
-	name := params.FileName
-	f := strings.NewReader(string(params.FileContent))
+	name := req.FileName
+	f := strings.NewReader(string(req.FileContent))
 
 	_, err := c.Object.Put(context.Background(), name, f, nil)
 	if err != nil {
 		log.Error("session:", req.RequestUUID, "INTERNAL_ERROR", err.Error())
 		return
 	}
-	objurl := c.Object.GetObjectURL(params.FileName)
+	objurl := c.Object.GetObjectURL(req.FileName)
 	req.Url = objurl.String()
 	return nil
 }
@@ -160,7 +164,7 @@ func (req *AddImageRequest) DBAddImage(params *AddImageParams) (errResp base.Api
 	db := mysql.GetDB()
 	ImageInfo := types.ImageInfo{
 		UUID:      req.RequestUUID,
-		ImageName: params.FileName,
+		ImageName: req.FileName,
 		Url:       req.Url,
 	}
 

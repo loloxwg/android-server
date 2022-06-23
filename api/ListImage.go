@@ -21,9 +21,9 @@ type ListImageResponse struct {
 }
 
 type ImageInfo struct {
-	FileName string `json:"file_name"`
-	Url      string `json:"url"`
-	Collect  int    `json:"collect"`
+	ImageName string `json:"image_name"`
+	Url       string `json:"url"`
+	Collect   int    `json:"collect"`
 }
 
 func (req *ListImageRequest) Process(c *gin.Context) {
@@ -89,7 +89,7 @@ func (req *ListImageRequest) ListImages() (ImagesListResp ListImageResponse, res
 	list := []*ImageInfo{}
 
 	DB := mysql.GetDB()
-	err = DB.Table("Image_table").Find(&list).Error
+	err = DB.Table("image_table").Find(&list).Error
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Error("session:", req.RequestUUID, "db found groups error:", err.Error())
