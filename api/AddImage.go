@@ -150,8 +150,33 @@ func (req *AddImageRequest) OSSAddImage(params *AddImageParams) (errResp base.Ap
 	// Case1 上传对象
 	name := req.FileName
 	f := strings.NewReader(string(req.FileContent))
-
-	_, err := c.Object.Put(context.Background(), name, f, nil)
+	filename := strings.Split(req.FileName, ".")
+	ext := filename[len(filename)-1]
+	imgMime := ""
+	switch ext {
+	case "jpg":
+		imgMime = "image/jpg"
+		break
+	case "jpeg":
+		imgMime = "image/jpeg"
+		break
+	case "png":
+		imgMime = "image/png"
+		break
+	case "svg":
+		imgMime = "image/svg+xml"
+		break
+	}
+	opt := &cos.ObjectPutOptions{
+		ObjectPutHeaderOptions: &cos.ObjectPutHeaderOptions{
+			ContentType: imgMime,
+		},
+		ACLHeaderOptions: &cos.ACLHeaderOptions{
+			XCosACL: "public-read",
+			//XCosACL: "private",
+		},
+	}
+	_, err := c.Object.Put(context.Background(), name, f, opt)
 	if err != nil {
 		log.Error("session:", req.RequestUUID, "INTERNAL_ERROR", err.Error())
 		return
